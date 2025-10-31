@@ -7,6 +7,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.math.BigDecimal;
 import java.util.Map;
+import java.util.Random;
 
 @SpringBootApplication
 public class ECommerceApplication  implements CommandLineRunner {
@@ -19,7 +20,7 @@ public class ECommerceApplication  implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        String productNumber = "P100";
+        String productNumber = "P100-"+ new Random().nextInt(1000,9999);
         String cartId = "cart1";
 
         System.out.println("1️⃣ Adding product...");
