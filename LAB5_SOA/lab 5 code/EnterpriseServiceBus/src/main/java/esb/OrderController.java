@@ -19,6 +19,7 @@ public class OrderController {
 
     @PostMapping("/orders")
     public ResponseEntity<?> receiveOrder(@RequestBody Order order) {
+        System.out.println(" 🟢 OrderController: received order: " + order.toString());
         Message<Order> orderMessage = MessageBuilder.withPayload(order).build();
         warehouseChannel.send(orderMessage);
         return new ResponseEntity<Order>(order, HttpStatus.OK);
