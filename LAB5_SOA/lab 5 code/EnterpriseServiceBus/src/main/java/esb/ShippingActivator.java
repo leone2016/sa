@@ -9,6 +9,6 @@ public class ShippingActivator {
 
 	public void ship(Order order) {
 		System.out.println("shipping: "+ order.toString());
-		restTemplate.postForLocation("http://localhost:8081/orders", order);
+		restTemplate.postForLocation("http://localhost:8082/orders", order);
 	}
 }
