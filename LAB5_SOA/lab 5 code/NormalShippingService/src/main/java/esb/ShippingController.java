@@ -11,7 +11,7 @@ public class ShippingController {
 
     @PostMapping("/orders")
     public ResponseEntity<?> receiveOrder(@RequestBody Order order) {
-        System.out.println("🚀 Next Day Shipping Application receiving order: "+order);
+        System.out.println("🚚 Normal Shipping Service receiving order: "+order);
         return new ResponseEntity<Order>(order, HttpStatus.OK);
     }
 }

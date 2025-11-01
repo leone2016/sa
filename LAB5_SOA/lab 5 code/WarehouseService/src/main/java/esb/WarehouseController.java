@@ -11,7 +11,7 @@ public class WarehouseController {
 
     @PostMapping("/orders")
     public ResponseEntity<?> receiveOrder(@RequestBody Order order) {
-        System.out.println("Warehouse Application receiving order: "+order);
+        System.out.println("🟢 [WAREHOUSE] Warehouse Application receiving order: "+order);
         return new ResponseEntity<Order>(order, HttpStatus.OK);
     }
 }

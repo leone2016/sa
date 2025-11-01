@@ -7,20 +7,77 @@
 			http://www.springframework.org/schema/integration
 			http://www.springframework.org/schema/integration/spring-integration.xsd">
 
+	<!-- Channels -->
 	<channel id="wharehousechannel"/>
-	<channel id="shippingchannel"/>
+	<channel id="orderTypeRouterChannel"/>
+	<channel id="internationalShippingChannel"/>
+	<channel id="domesticRouterChannel"/>
+	<channel id="normalShippingChannel"/>
+	<channel id="nextDayShippingChannel"/>
+	<channel id="paymentRouterChannel"/>
+	<channel id="mastercardPaymentChannel"/>
+	<channel id="visaPaymentChannel"/>
+	<channel id="paypalPaymentChannel"/>
 
+	<!-- Warehouse Service Activator -->
 	<service-activator input-channel="wharehousechannel"
-	                   output-channel="shippingchannel"
+	                   output-channel="orderTypeRouterChannel"
 	                   ref="warehouseservice"
 	                   method="checkStock"/>
 	                   
-	<service-activator input-channel="shippingchannel"
-	                   ref="shippingservice"
-	                   method="ship"/>
-	                   
-	<beans:bean id="warehouseservice" class="esb.WarehouseActivator"/>
-	<beans:bean id="shippingservice" class="esb.ShippingActivator"/>
-
+	<!-- OrderTypeRouter - Routes by orderType -->
+	<router input-channel="orderTypeRouterChannel" ref="orderTypeRouter" method="route"/>
 	
+	<!-- International Shipping Activator -->
+	<service-activator input-channel="internationalShippingChannel"
+	                   output-channel="paymentRouterChannel"
+	                   ref="internationalShippingService"
+	                   method="ship"/>
+	
+	<!-- DomesticAmountRouter - Routes domestic orders by amount -->
+	<router input-channel="domesticRouterChannel" ref="domesticAmountRouter" method="route"/>
+	
+	<!-- Normal Shipping Activator -->
+	<service-activator input-channel="normalShippingChannel"
+	                   output-channel="paymentRouterChannel"
+	                   ref="normalShippingService"
+	                   method="ship"/>
+	
+	<!-- Next Day Shipping Activator -->
+	<service-activator input-channel="nextDayShippingChannel"
+	                   output-channel="paymentRouterChannel"
+	                   ref="nextDayShippingService"
+	                   method="ship"/>
+	
+	<!-- PaymentRouter - Routes by paymentType -->
+	<router input-channel="paymentRouterChannel" ref="paymentRouter" method="route"/>
+	
+	<!-- Mastercard Payment Activator -->
+	<service-activator input-channel="mastercardPaymentChannel"
+	                   ref="mastercardPaymentService"
+	                   method="pay"/>
+	
+	<!-- Visa Payment Activator -->
+	<service-activator input-channel="visaPaymentChannel"
+	                   ref="visaPaymentService"
+	                   method="pay"/>
+	
+	<!-- PayPal Payment Activator -->
+	<service-activator input-channel="paypalPaymentChannel"
+	                   ref="paypalPaymentService"
+	                   method="pay"/>
+	
+	<!-- Beans -->
+	<beans:bean id="warehouseservice" class="esb.WarehouseActivator"/>
+	<beans:bean id="orderTypeRouter" class="esb.router.OrderTypeRouter"/>
+	<beans:bean id="domesticAmountRouter" class="esb.router.DomesticAmountRouter"/>
+	<beans:bean id="internationalShippingService" class="esb.shipping.InternationalShippingActivator"/>
+	<beans:bean id="normalShippingService" class="esb.shipping.NormalShippingActivator"/>
+	<beans:bean id="nextDayShippingService" class="esb.shipping.NextDayShippingActivator"/>
+	<beans:bean id="paymentRouter" class="esb.router.PaymentRouter"/>
+	<beans:bean id="mastercardPaymentService" class="esb.payment.MastercardPaymentActivator"/>
+	<beans:bean id="visaPaymentService" class="esb.payment.VisaPaymentActivator"/>
+	<beans:bean id="paypalPaymentService" class="esb.payment.PayPalPaymentActivator"/>
+	<beans:bean id="monitoringLogger" class="esb.MonitoringLogger"/>
+
 </beans:beans>

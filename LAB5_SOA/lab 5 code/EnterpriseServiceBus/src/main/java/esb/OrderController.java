@@ -16,10 +16,14 @@ public class OrderController {
     @Autowired
     @Qualifier("wharehousechannel")
     MessageChannel warehouseChannel;
+    
+    @Autowired
+    MonitoringLogger monitoringLogger;
 
-    @PostMapping("/orders")
+    @PostMapping("/api/orders")
     public ResponseEntity<?> receiveOrder(@RequestBody Order order) {
         System.out.println(" 🟢 OrderController: received order: " + order.toString());
+        monitoringLogger.logOrderReceived(order);
         Message<Order> orderMessage = MessageBuilder.withPayload(order).build();
         warehouseChannel.send(orderMessage);
         return new ResponseEntity<Order>(order, HttpStatus.OK);

@@ -2,7 +2,13 @@ package esb;
 
 public class Order {
 	private String orderNumber;
+	private Integer orderId;
 	private double amount;
+	private String orderType; // "domestic" or "international"
+	private String paymentType; // "mastercard", "visa", or "paypal"
+
+	public Order() {
+	}
 
 	public Order(String orderNumber, double amount) {
 		super();
@@ -18,6 +24,14 @@ public class Order {
 		this.orderNumber = orderNumber;
 	}
 
+	public Integer getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(Integer orderId) {
+		this.orderId = orderId;
+	}
+
 	public double getAmount() {
 		return amount;
 	}
@@ -25,9 +39,26 @@ public class Order {
 	public void setAmount(double amount) {
 		this.amount = amount;
 	}
+
+	public String getOrderType() {
+		return orderType;
+	}
+
+	public void setOrderType(String orderType) {
+		this.orderType = orderType;
+	}
+
+	public String getPaymentType() {
+		return paymentType;
+	}
+
+	public void setPaymentType(String paymentType) {
+		this.paymentType = paymentType;
+	}
 	
 	public String toString(){
-		return "order: nr="+orderNumber+" amount="+amount;
+		return "order: id=" + (orderId != null ? orderId : orderNumber) + " amount=" + amount + 
+			   " type=" + orderType + " payment=" + paymentType;
 	}
 
 }
