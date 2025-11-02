@@ -54,11 +54,13 @@
 	
 	<!-- Mastercard Payment Activator -->
 	<service-activator input-channel="mastercardPaymentChannel"
+	                   output-channel="nullChannel"
 	                   ref="mastercardPaymentService"
 	                   method="pay"/>
 	
 	<!-- Visa Payment Activator -->
 	<service-activator input-channel="visaPaymentChannel"
+	                   output-channel="nullChannel"
 	                   ref="visaPaymentService"
 	                   method="pay"/>
 	

@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: Accountservice
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+
+server:
+  port: 8091
