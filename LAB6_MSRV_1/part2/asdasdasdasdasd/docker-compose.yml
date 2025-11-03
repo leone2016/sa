@@ -1,9 +1,0 @@
-services:
-  consul:
-    image: hashicorp/consul:1.16
-    command: ["agent","-dev","-ui","-client=0.0.0.0"]
-    ports:
-      - "8500:8500"   # UI / API
-      - "8600:8600/udp"
-    networks: [ demo ]
-networks: { demo: {} }
