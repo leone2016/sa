@@ -7,7 +7,7 @@ spring:
   cloud:
     consul:
       host: localhost           # o el host/servicio 'consul' si estás en Docker Compose
-      port: 8500
+      port: 8501
       discovery:
         register: true
         prefer-ip-address: true        # evita hostnames no resolubles
