@@ -1,0 +1,24 @@
+{
+  "Ordernumber":"122435",
+  "Orderdate": "11/09/2021",
+  "customer" : {
+    "name": "Frank Brown",
+    "email": "fbrown@gmail.com",
+    "phone": "0623156543"
+  },
+  "Totalprice" : "5160.00",
+  "orderlines": [
+    {
+      "quantity": "2",
+      "product number": "A546",
+      "product name" : "IPhone 12",
+      "price": "980.00"
+    },
+    {
+      "quantity": "4",
+      "product number": "S333",
+      "product name" : "Samsung Galaxy 12S",
+      "price": "800.00"
+    }
+  ]
+}
