@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: ServiceB
+  config:
+    import: configserver:http://localhost:8888
+
+
+
+

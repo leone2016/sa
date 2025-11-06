@@ -1,0 +1,26 @@
+server:
+  port: 9093
+
+spring:
+  application:
+    name: ServiceOne
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        enabled: true
+        prefer-ip-address: true
+        instance-id: ${spring.application.name}:${random.value}
+
+
+otlp:
+  tracing:
+    endpoint: http://localhost:9411/api/v2/spans  # Zipkin endpoint
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+
+

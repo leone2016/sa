@@ -1,0 +1,25 @@
+
+server:
+  port: 9093
+
+spring:
+  application:
+    name: ServiceOne
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        enabled: true
+        prefer-ip-address: true
+        instance-id: ${spring.application.name}:${random.value}
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      demoCircuitBreaker:
+        slidingWindowSize: 5
+        minimumNumberOfCalls: 3
+        failureRateThreshold: 50
+        waitDurationInOpenState: 5s
+
