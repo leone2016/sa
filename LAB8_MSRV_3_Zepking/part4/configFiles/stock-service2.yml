@@ -10,12 +10,12 @@ spring:
       port: ${CONSUL_PORT:8501}
       discovery:
         register: true
-        serviceName: ${spring.application.name}
-        preferIpAddress: true
-        instanceId: ${spring.application.name}-${SERVER_PORT:${server.port:8902}}
-        healthCheckUrl: http://host.docker.internal:${SERVER_PORT:${server.port:8902}}/actuator/health
-        healthCheckInterval: 10s
-        deregisterCriticalServiceAfter: 1m
+        service-name: ${spring.application.name}
+        prefer-ip-address: true
+        instance-id: ${spring.application.name}-${SERVER_PORT:${server.port:8902}}
+        health-check-url: http://host.docker.internal:${SERVER_PORT:${server.port:8902}}/actuator/health
+        health-check-interval: 10s
+        deregister-critical-service-after: 1m
 
 management:
   endpoints:

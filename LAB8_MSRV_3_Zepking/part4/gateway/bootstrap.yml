@@ -1,6 +1,4 @@
 spring:
-  application:
-    name: gateway   # this name shuld match with the name in config server eg gateway.yml
   cloud:
     config:
       uri: http://localhost:8888   # URL  Config Server

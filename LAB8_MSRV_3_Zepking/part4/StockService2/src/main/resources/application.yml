@@ -1,9 +1,9 @@
 # server:
 #   port: 8902
 
-# spring:
-#   application:
-#     name: stock-service
+ spring:
+   application:
+     name: stock-service
 #   cloud:
 #     consul:
 #       host: localhost           # o el host/servicio 'consul' si estás en Docker Compose
