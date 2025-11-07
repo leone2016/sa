@@ -6,7 +6,8 @@ Contract.make {
 		method GET()
 		url("/validate") {
 			queryParameters {
-				parameter("number", "1")
+				parameter("number1", "1")
+				parameter("number2", "2")
 			}
 		}
 	}
