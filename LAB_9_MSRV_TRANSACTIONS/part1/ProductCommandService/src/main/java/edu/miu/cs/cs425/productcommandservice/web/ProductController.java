@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,14 +27,14 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<Product> create(@Validated @RequestBody ProductRequest request) {
+    public ResponseEntity<Product> create(@RequestBody ProductRequest request) {
         Product created = productService.create(new Product(request.getProductNumber(), request.getName(), request.getPrice()));
         return ResponseEntity.created(URI.create("/products/" + created.getProductNumber())).body(created);
     }
 
     @PutMapping("/{productNumber}")
     public ResponseEntity<Product> update(@PathVariable String productNumber,
-                                          @Validated @RequestBody ProductRequest request) {
+                                          @RequestBody ProductRequest request) {
         Product updated = productService.update(productNumber,
                 new Product(productNumber, request.getName(), request.getPrice()));
         return ResponseEntity.ok(updated);

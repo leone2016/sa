@@ -1,9 +1,14 @@
-package edu.miu.cs.cs425.productcommandservice.web;
+package edu.miu.cs.cs425.productqueryservice.domain;
 
 import java.math.BigDecimal;
 
-public class ProductRequest {
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+@Document(collection = "products")
+public class ProductDocument {
+
+    @Id
     private String productNumber;
 
     private String name;
