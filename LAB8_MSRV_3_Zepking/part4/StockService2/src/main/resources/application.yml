@@ -3,7 +3,7 @@
 
  spring:
    application:
-     name: stock-service
+     name: stock-service2
 #   cloud:
 #     consul:
 #       host: localhost           # o el host/servicio 'consul' si estás en Docker Compose
