@@ -1,6 +1,9 @@
 spring:
-  cloud:
-    config:
-      uri: http://localhost:8888   # URL  Config Server
-      name: gateway
-      profile: default
+  application:
+    name: gateway   # Debe coincidir con el nombre del archivo gateway.yml en GitHub
+
+  config:
+    import: optional:configserver:http://localhost:8888  # Conecta con el Config Server
+
+  profiles:
+    active: default   # Usa el perfil default del config server
