@@ -5,7 +5,7 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/renespring/springcloud.git
+          uri: https://github.com/leone2016/sa.git
 
 
 
