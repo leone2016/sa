@@ -1,35 +1,35 @@
-server:
-  port: 8902
+# server:
+#   port: 8902
 
-spring:
-  application:
-    name: stock-service
-  cloud:
-    consul:
-      host: localhost           # o el host/servicio 'consul' si estás en Docker Compose
-      port: 8501
-      discovery:
-        register: true
-        prefer-ip-address: true        # evita hostnames no resolubles
-        instance-id: ${spring.application.name}-${server.port}
-        health-check-url: http://host.docker.internal:8902/actuator/health
-        health-check-interval: 10s
-        deregister-critical-service-after: 1m
-        # Si corres en Docker Compose: usa el nombre del servicio/host correcto
-        # hostname: stock-service
-        # scheme: http
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,readiness,liveness
-  endpoint:
-    health:
-      probes:
-        enabled: true
-  tracing:
-    sampling:
-      probability: 1.0
-    exporter:
-      zipkin:
-        endpoint: http://localhost:9411/api/v2/spans
+# spring:
+#   application:
+#     name: stock-service
+#   cloud:
+#     consul:
+#       host: localhost           # o el host/servicio 'consul' si estás en Docker Compose
+#       port: 8501
+#       discovery:
+#         register: true
+#         prefer-ip-address: true        # evita hostnames no resolubles
+#         instance-id: ${spring.application.name}-${server.port}
+#         health-check-url: http://host.docker.internal:8902/actuator/health
+#         health-check-interval: 10s
+#         deregister-critical-service-after: 1m
+#         # Si corres en Docker Compose: usa el nombre del servicio/host correcto
+#         # hostname: stock-service
+#         # scheme: http
+# management:
+#   endpoints:
+#     web:
+#       exposure:
+#         include: health,info,readiness,liveness
+#   endpoint:
+#     health:
+#       probes:
+#         enabled: true
+#   tracing:
+#     sampling:
+#       probability: 1.0
+#     exporter:
+#       zipkin:
+#         endpoint: http://localhost:9411/api/v2/spans
