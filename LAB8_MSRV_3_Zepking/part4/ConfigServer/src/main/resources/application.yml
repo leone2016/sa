@@ -8,6 +8,13 @@ spring:
           uri: https://github.com/leone2016/sa
           search-paths: LAB8_MSRV_3_Zepking/part4/configFiles
           default-label: main
+    consul:
+      host: localhost
+      port: 8500
+      discovery:
+        register: true
+        prefer-ip-address: true
+        service-name: gateway
 
 
 
