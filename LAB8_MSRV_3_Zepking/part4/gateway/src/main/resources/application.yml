@@ -6,7 +6,7 @@ spring:
     name: gateway
   cloud:
     consul:
-      host: localhost
+      host: localhosta
       port: 8500
       discovery:
         register: true

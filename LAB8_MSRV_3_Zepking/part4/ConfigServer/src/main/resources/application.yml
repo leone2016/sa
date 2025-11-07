@@ -5,7 +5,9 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/leone2016/sa.git
+          uri: https://github.com/leone2016/sa
+          search-paths: LAB8_MSRV_3_Zepking/part4/configFiles
+          default-label: main
 
 
 
