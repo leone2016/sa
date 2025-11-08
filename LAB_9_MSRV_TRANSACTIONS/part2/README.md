@@ -11,7 +11,7 @@ This repository contains three Spring Boot services demonstrating a basic CQRS s
 - Events are versioned and replayed to rebuild the aggregate state, preserving the behaviour from Part 1 while enabling an append-only audit log.
 - The write model continues to feed the query side, so existing REST flows and the Part 1 query service still behave the same.
 
-### Verifying the Event Log
+### Verifying the Product Event Log
 After running the standard product commands below, inspect the event store:
 
 ```bash
@@ -19,6 +19,28 @@ mongosh cqrs --eval 'db.product_events.find().sort({occurredOn: 1}).pretty()'
 ```
 
 Expect to see `CREATED`, `UPDATED`, and `DELETED` events with monotonically increasing `version` values for each `productNumber`.
+
+## Part 2 Update – Event-Sourced Stock Commands
+- The `StockCommandService` now appends domain events to `stock_events` before mutating the stock write model (`stocks` collection).
+- Aggregate state is reconstructed exclusively by replaying events, so the service validates create/update/delete operations against the event stream rather than the Mongo document.
+- The query side still consumes the write model, meaning API responses remain identical to Part 1 while the history is now auditable.
+
+### Verifying the Stock Event Log
+Use these commands to confirm the stock event stream:
+
+```bash
+curl -X POST http://localhost:8081/stocks \
+     -H "Content-Type: application/json" \
+     -d '{"productNumber": "P-200", "quantity": 20}'
+
+curl -X PUT http://localhost:8081/stocks/P-200 \
+     -H "Content-Type: application/json" \
+     -d '{"productNumber": "P-200", "quantity": 32}'
+
+mongosh cqrs --eval 'db.stock_events.find({productNumber: "P-200"}).sort({version: 1})'
+```
+
+The event log should show a `CREATED` event followed by an `UPDATED` event with incrementing `version` values. After a delete call, expect a `DELETED` event.
 
 ## Prerequisites
 - MongoDB running on `localhost:27017` (Docker container already configured for the lab).
@@ -121,6 +143,16 @@ Start `ProductCommandService`, `StockCommandService`, and finally `ProductQueryS
   curl -X DELETE http://localhost:8081/stocks/P-200
   ```
 
+- **Replay validation**
+  ```bash
+  curl -X PUT http://localhost:8081/stocks/P-200 \
+       -H "Content-Type: application/json" \
+       -d '{"productNumber": "P-200", "quantity": 45}'
+
+  mongosh cqrs --eval 'db.stock_events.find({productNumber: "P-200"}).sort({version: 1})'
+  ```
+  Confirm the last event version increases and its payload matches the new quantity.
+
 ### C. Product query service (port 8082)
 - **Get combined view**
   ```bash
@@ -133,9 +165,10 @@ Start `ProductCommandService`, `StockCommandService`, and finally `ProductQueryS
 2. **Stock missing:** create product only; query should show `numberInStock: 0`.
 3. **Product update propagation:** update product name/price; query should reflect new values.
 4. **Quantity update propagation:** update stock; query should reflect new quantity.
-5. **Event replay:** update the same product multiple times, then query `product_events` and verify versions increment from 1..n without gaps.
-6. **Deletions:** delete stock (product remains) → query should show `numberInStock: 0`. Then delete product → ensure it disappears from query result and a `DELETED` event appears.
-7. **Multiple products:** create additional products/stocks to ensure independent aggregation.
+5. **Product event replay:** update the same product multiple times, then query `product_events` and verify versions increment from 1..n without gaps.
+6. **Stock event replay:** repeatedly update a stock entry and confirm `stock_events` maintains a continuous version history.
+7. **Deletions:** delete stock (product remains) → query should show `numberInStock: 0`. Then delete product → ensure it disappears from query result and both event streams emit `DELETED`.
+8. **Multiple products:** create additional products/stocks to ensure independent aggregation.
 
 ## Update & Delete Checks
 - Update product: `PUT http://localhost:8080/products/P-100`
