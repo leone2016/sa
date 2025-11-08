@@ -6,6 +6,20 @@ This repository contains three Spring Boot services demonstrating a basic CQRS s
 - `StockCommandService` (port 8081) – manages quantity on hand for each product.
 - `ProductQueryService` (port 8082) – reads from both collections to expose the combined product view.
 
+## Part 2 Update – Event-Sourced Product Commands
+- The `ProductCommandService` now persists immutable domain events in the `product_events` collection before updating the product write model (`products` collection).
+- Events are versioned and replayed to rebuild the aggregate state, preserving the behaviour from Part 1 while enabling an append-only audit log.
+- The write model continues to feed the query side, so existing REST flows and the Part 1 query service still behave the same.
+
+### Verifying the Event Log
+After running the standard product commands below, inspect the event store:
+
+```bash
+mongosh cqrs --eval 'db.product_events.find().sort({occurredOn: 1}).pretty()'
+```
+
+Expect to see `CREATED`, `UPDATED`, and `DELETED` events with monotonically increasing `version` values for each `productNumber`.
+
 ## Prerequisites
 - MongoDB running on `localhost:27017` (Docker container already configured for the lab).
 - Java 21 and Gradle wrappers (included).
@@ -67,6 +81,16 @@ Start `ProductCommandService`, `StockCommandService`, and finally `ProductQueryS
   curl -X DELETE http://localhost:8080/products/P-200
   ```
 
+- **Replay validation**
+  ```bash
+  curl -X PUT http://localhost:8080/products/P-200 \
+       -H "Content-Type: application/json" \
+       -d '{"productNumber": "P-200", "name": "Tenkeyless Keyboard", "price": 109.95}'
+
+  mongosh cqrs --eval 'db.product_events.find({productNumber: "P-200"}).sort({version: 1})'
+  ```
+  The last event should reflect the new name/price and its `version` should be greater than the previous event.
+
 ### B. Stock command service (port 8081)
 - **List stock entries**
   ```bash
@@ -104,8 +128,9 @@ Start `ProductCommandService`, `StockCommandService`, and finally `ProductQueryS
 2. **Stock missing:** create product only; query should show `numberInStock: 0`.
 3. **Product update propagation:** update product name/price; query should reflect new values.
 4. **Quantity update propagation:** update stock; query should reflect new quantity.
-5. **Deletions:** delete stock (product remains) → query should show `numberInStock: 0`. Then delete product → ensure it disappears from query result.
-6. **Multiple products:** create additional products/stocks to ensure independent aggregation.
+5. **Event replay:** update the same product multiple times, then query `product_events` and verify versions increment from 1..n without gaps.
+6. **Deletions:** delete stock (product remains) → query should show `numberInStock: 0`. Then delete product → ensure it disappears from query result and a `DELETED` event appears.
+7. **Multiple products:** create additional products/stocks to ensure independent aggregation.
 
 ## Update & Delete Checks
 - Update product: `PUT http://localhost:8080/products/P-100`
