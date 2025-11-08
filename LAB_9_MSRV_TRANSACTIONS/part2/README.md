@@ -35,10 +35,11 @@ Start `ProductCommandService`, `StockCommandService`, and finally `ProductQueryS
 
 ## Smoke Test Flow
 ### 1. Create a product
+
    ```bash
    curl -X POST http://localhost:8080/products \
         -H "Content-Type: application/json" \
-        -d '{"productNumber": "P-100", "name": "Laptop", "price": 1299.99}'
+        -d '{"productNumber": "P-101", "name": "Iphone", "price": 1300.00}'
    ```
 
 ### 2. Create stock entry
@@ -74,8 +75,12 @@ Start `ProductCommandService`, `StockCommandService`, and finally `ProductQueryS
   curl -X PUT http://localhost:8080/products/P-200 \
        -H "Content-Type: application/json" \
        -d '{"productNumber": "P-200", "name": "RGB Mechanical Keyboard", "price": 99.95}'
+  
+  curl -X PUT http://localhost:8080/products/P-101 \
+       -H "Content-Type: application/json" \
+       -d '{"productNumber": "P-101", "name": "RGB Mechanical Keyboard", "price": 99.95}'
   ```
-
+  
 - **Delete product**
   ```bash
   curl -X DELETE http://localhost:8080/products/P-200
@@ -86,7 +91,7 @@ Start `ProductCommandService`, `StockCommandService`, and finally `ProductQueryS
   curl -X PUT http://localhost:8080/products/P-200 \
        -H "Content-Type: application/json" \
        -d '{"productNumber": "P-200", "name": "Tenkeyless Keyboard", "price": 109.95}'
-
+  
   mongosh cqrs --eval 'db.product_events.find({productNumber: "P-200"}).sort({version: 1})'
   ```
   The last event should reflect the new name/price and its `version` should be greater than the previous event.
