@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: ticket-service
+  data:
+    mongodb:
+      uri: ${TICKET_MONGO_URI:mongodb://localhost:27017/ticketdb}
+      auto-index-creation: true
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+server:
+  port: ${TICKET_SERVICE_PORT:8083}
+logging:
+  level:
+    root: INFO
+
