@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: saga-orchestrator
+  cloud:
+    compatibility-verifier:
+      enabled: false
+server:
+  port: ${SAGA_SERVICE_PORT:8080}
+services:
+  seat: ${SEAT_SERVICE_URL:http://localhost:8081}
+  payment: ${PAYMENT_SERVICE_URL:http://localhost:8082}
+  ticket: ${TICKET_SERVICE_URL:http://localhost:8083}
+logging:
+  level:
+    root: INFO
+    com.flight: DEBUG
+feign:
+  client:
+    config:
+      default:
+        loggerLevel: FULL
+

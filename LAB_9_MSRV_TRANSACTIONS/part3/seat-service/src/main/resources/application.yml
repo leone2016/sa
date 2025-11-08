@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: seat-service
+  data:
+    mongodb:
+      uri: ${SEAT_MONGO_URI:mongodb://localhost:27017/seatdb}
+      auto-index-creation: true
+server:
+  port: ${SEAT_SERVICE_PORT:8081}
+logging:
+  level:
+    root: INFO
+
