@@ -13,7 +13,7 @@ public class Receiver {
     @KafkaListener(topics = {"cameratopic1" , "cameratopic2"})
     public void receive(@Payload SensorRecord sensorRecord,
                         @Headers MessageHeaders headers) {
-        System.out.println("received message="+ sensorRecord.toString());
+        System.out.println(" 🔴received message="+ sensorRecord.toString());
     }
 
 }
