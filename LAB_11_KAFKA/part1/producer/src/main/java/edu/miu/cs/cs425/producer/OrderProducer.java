@@ -17,6 +17,6 @@ public class OrderProducer {
         log.info("Sending order: {}", order);
         ObjectMapper mapper = new ObjectMapper();
         String orderAsString = mapper.writeValueAsString(order);
-        kafkaTemplate.send("orders-topic", order.toString());
+        kafkaTemplate.send("orders-topic", orderAsString);
     }
 }
