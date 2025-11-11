@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>edu.miu.cs.cs425</groupId>
-    <artifactId>consumer</artifactId>
+    <artifactId>producer</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>consumer</name>
-    <description>consumer</description>
+    <name>producer</name>
+    <description>producer</description>
     <url/>
     <licenses>
         <license/>
@@ -37,10 +37,6 @@
         <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.retry</groupId>
-            <artifactId>spring-retry</artifactId>
         </dependency>
 
         <dependency>
