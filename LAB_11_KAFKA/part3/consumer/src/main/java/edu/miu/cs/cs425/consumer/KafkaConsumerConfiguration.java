@@ -1,5 +1,6 @@
 package edu.miu.cs.cs425.consumer;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.common.TopicPartition;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +19,11 @@ class KafkaConsumerConfiguration {
 
     private static final long RETRY_DELAY_MS = 1_000L;
     private static final long MAX_ATTEMPTS = 2L;
+
+    @Bean
+    ObjectMapper objectMapper() {
+        return new ObjectMapper();
+    }
 
     @Bean
     DefaultErrorHandler defaultErrorHandler(KafkaTemplate<Object, Object> kafkaTemplate) {

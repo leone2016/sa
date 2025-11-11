@@ -7,11 +7,9 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.test.condition.EmbeddedKafkaCondition;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 
 @SpringBootTest
@@ -21,6 +19,11 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
         "orders-topic.retryable.DLT"
 })
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+@TestPropertySource(properties = {
+        "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}",
+        "spring.kafka.producer.bootstrap-servers=${spring.embedded.kafka.brokers}",
+        "spring.kafka.consumer.auto-offset-reset=earliest"
+})
 class OrderListenersIntegrationTest {
 
     @SpyBean
@@ -34,14 +37,6 @@ class OrderListenersIntegrationTest {
 
     @Autowired
     ObjectMapper objectMapper;
-
-    @DynamicPropertySource
-    static void overrideKafkaProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.kafka.bootstrap-servers",
-                () -> EmbeddedKafkaCondition.getBroker().getBrokersAsString());
-        registry.add("spring.kafka.producer.bootstrap-servers",
-                () -> EmbeddedKafkaCondition.getBroker().getBrokersAsString());
-    }
 
     @Test
     void defaultErrorHandlerRetriesAndRoutesToDlt() throws Exception {

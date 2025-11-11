@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Order consumer that uses {@link RetryableOrderListener#consumeWithRetry(ConsumerRecord, long, int)}
+ * Order consumer that uses {@link RetryableOrderListener#consumeWithRetry(ConsumerRecord)}
  * annotated with {@link Retryable} to retry two additional times before forwarding the record
  * into a dedicated retryable dead-letter topic.
  */
