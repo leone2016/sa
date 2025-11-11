@@ -69,8 +69,8 @@ public class RetryableOrderListener {
                                     @Header(name = KafkaHeaders.DLT_EXCEPTION_FQCN, required = false) String exceptionType,
                                     @Header(name = KafkaHeaders.DLT_EXCEPTION_MESSAGE, required = false) String exceptionMessage,
                                     @Header(name = KafkaHeaders.DLT_ORIGINAL_TOPIC, required = false) String originalTopic,
-                                    @Header(name = KafkaHeaders.DLT_ORIGINAL_PARTITION, required = false) Integer originalPartition,
-                                    @Header(name = KafkaHeaders.DLT_ORIGINAL_OFFSET, required = false) Long originalOffset) {
+                                    @Header(name = KafkaHeaders.DLT_ORIGINAL_PARTITION, required = false) String originalPartition,
+                                    @Header(name = KafkaHeaders.DLT_ORIGINAL_OFFSET, required = false) String originalOffset) {
         log.warn("[Retryable][DLT] payload {} (exception: {} - {}) from {}-{} @{}",
                 payload, exceptionType, exceptionMessage, originalTopic, originalPartition, originalOffset);
     }
