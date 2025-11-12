@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Chat</title>
+    <style>
+        :root{
+            --wp-header:#075E54;      /* verde oscuro header */
+            --wp-accent:#25D366;      /* verde WhatsApp botones */
+            --wp-me:#DCF8C6;          /* burbuja propia */
+            --wp-other:#ECECEC;       /* burbuja otros */
+            --wp-text:#111;
+            --wp-muted:#667781;
+            --wp-bg:#0b141a;
+            --wp-panel:#202c33;
+        }
+        *{box-sizing:border-box}
+        html,body{height:100%;margin:0;background:#111;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue","Noto Sans",sans-serif;color:#e9edef}
+        .app{
+            max-width:900px;height:100dvh;margin:0 auto;display:flex;flex-direction:column;border-left:1px solid #222;border-right:1px solid #222;background:#111;
+        }
+        /* Header */
+        .header{
+            display:flex;align-items:center;gap:.75rem;padding:.75rem .9rem;background:var(--wp-header);
+            position:sticky;top:0;z-index:10;box-shadow:0 1px 0 rgba(0,0,0,.25);
+        }
+        .avatar{width:36px;height:36px;border-radius:50%;background:#eee;flex:0 0 36px;display:grid;place-items:center;color:#222;font-weight:700}
+        .title{display:flex;flex-direction:column}
+        .title .name{font-weight:600}
+        .title .status{font-size:.8rem;color:#d9fdd3}
+        /* Chat body */
+        .chat{
+            flex:1;overflow:auto;background:
+                url('data:image/svg+xml;utf8,\
+        <svg xmlns="http://www.w3.org/2000/svg" width="340" height="340" viewBox="0 0 340 340">\
+          <g fill="%23667781" fill-opacity=".08">\
+            <circle cx="40" cy="40" r="2"/><circle cx="140" cy="140" r="2"/><circle cx="240" cy="90" r="2"/>\
+            <circle cx="290" cy="250" r="2"/><circle cx="90" cy="260" r="2"/><circle cx="200" cy="300" r="2"/>\
+          </g></svg>') center/300px, linear-gradient(#0b141a,#0b141a);
+            padding:12px 10px 90px; /* espacio inferior para la barra */
+            scroll-behavior:smooth;
+        }
+        .message-row{
+            display:flex;margin:6px 0;
+        }
+        .message-row.me{justify-content:flex-end}
+        .bubble{
+            position:relative;max-width:min(80%,640px);padding:.55rem .7rem .6rem;border-radius:10px;
+            box-shadow:0 1px .5px rgba(0,0,0,.13);word-wrap:break-word;white-space:pre-wrap;color:var(--wp-text);
+        }
+        .me .bubble{
+            background:var(--wp-me);border-top-right-radius:4px;
+        }
+        .other .bubble{
+            background:var(--wp-other);border-top-left-radius:4px;
+        }
+        .meta{
+            display:flex;gap:.5rem;align-items:center;margin-top:.25rem;font-size:.72rem;color:#667781
+        }
+        .sender{font-weight:600}
+        /* Composer */
+        .composer{
+            position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;padding:.6rem .6rem;background:linear-gradient(to top, #0b141a 60%, transparent);
+        }
+        .composer .bar{
+            width:100%;max-width:900px;display:flex;gap:.5rem;background:var(--wp-panel);border-radius:26px;padding:.35rem .4rem;border:1px solid #2a3942;
+        }
+        .composer input{
+            flex:1;border:none;background:transparent;color:#e9edef;font-size:1rem;padding:.6rem .9rem;outline:none;
+        }
+        .btn{
+            border:none;border-radius:24px;padding:.55rem .9rem;font-weight:600;cursor:pointer;transition:.15s transform ease;
+            background:var(--wp-accent);color:#062f22;
+        }
+        .btn:active{transform:scale(.98)}
+        .btn.secondary{background:#2a3942;color:#e9edef}
+        /* Small helpers */
+        .topbar{display:flex;gap:.4rem;align-items:center;margin-left:auto}
+        .chip{
+            background:#1f2c33;border:1px solid #2a3942;color:#c4c7c5;padding:.15rem .5rem;border-radius:999px;font-size:.72rem
+        }
+        /* Responsive tweaks */
+        @media (max-width:600px){
+            .composer .bar{border-radius:14px}
+            .bubble{max-width:90%}
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <!-- Header -->
+    <div class="header">
+        <div class="avatar" id="avatar">L</div>
+        <div class="title">
+            <div class="name">Grupo • Chat</div>
+            <div class="status" id="status">conectando…</div>
+        </div>
+        <div class="topbar">
+            <span class="chip" id="youChip">Yo: —</span>
+        </div>
+    </div>
+
+    <!-- Chat body -->
+    <div class="chat" id="chat"></div>
+
+    <!-- Composer -->
+    <div class="composer">
+        <div class="bar">
+            <input id="input" type="text" placeholder="Escribe un mensaje" autocomplete="off"/>
+            <button class="btn secondary" id="changeNameBtn" title="Cambiar nombre">Nombre</button>
+            <button class="btn" id="sendBtn" title="Enviar">Enviar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    (() => {
+        // === Config ===
+        const WS_PATH = "/chat"; // tu endpoint en WebSocketConfig
+        // Construye ws:// o wss:// según corresponda
+        const wsUrl = (location.protocol === "https:" ? "wss://" : "ws://") + location.host + WS_PATH;
+
+        // === Estado UI ===
+        const chatEl = document.getElementById("chat");
+        const inputEl = document.getElementById("input");
+        const sendBtn = document.getElementById("sendBtn");
+        const statusEl = document.getElementById("status");
+        const youChipEl = document.getElementById("youChip");
+        const avatarEl = document.getElementById("avatar");
+        const changeNameBtn = document.getElementById("changeNameBtn");
+
+        // Nombre del usuario (persistimos en localStorage)
+        function askName(){
+            let n = prompt("Tu nombre para el chat:", localStorage.getItem("chatName") || "");
+            if(!n) n = "Anónimo";
+            n = n.trim().slice(0,20);
+            localStorage.setItem("chatName", n);
+            youChipEl.textContent = "Yo: " + n;
+            avatarEl.textContent = n.charAt(0).toUpperCase();
+            return n;
+        }
+        let myName = localStorage.getItem("chatName") || askName();
+        youChipEl.textContent = "Yo: " + myName;
+        avatarEl.textContent = myName.charAt(0).toUpperCase();
+
+        changeNameBtn.addEventListener("click", () => {
+            myName = askName();
+        });
+
+        // === WebSocket ===
+        let ws;
+
+        function connect(){
+            ws = new WebSocket(wsUrl);
+
+            ws.addEventListener("open", () => {
+                statusEl.textContent = "en línea";
+            });
+
+            ws.addEventListener("close", () => {
+                statusEl.textContent = "desconectado • reconectando…";
+                setTimeout(connect, 1200);
+            });
+
+            ws.addEventListener("error", () => {
+                statusEl.textContent = "error de conexión";
+            });
+
+            ws.addEventListener("message", (evt) => {
+                // Se espera JSON: { sender, content, timestamp? }
+                try{
+                    const data = JSON.parse(evt.data);
+                    addMessage(data.sender || "Anónimo", data.content || "", data.timestamp || Date.now());
+                }catch(_){
+                    // Si tu backend reenvía texto plano, muéstralo igual:
+                    addMessage("Sistema", String(evt.data), Date.now());
+                }
+            });
+        }
+        connect();
+
+        // === UI: render de burbujas ===
+        function addMessage(sender, content, ts){
+            const isMe = sender === myName;
+            const row = document.createElement("div");
+            row.className = "message-row " + (isMe ? "me" : "other");
+
+            const bubble = document.createElement("div");
+            bubble.className = "bubble";
+            bubble.textContent = content;
+
+            const meta = document.createElement("div");
+            meta.className = "meta";
+
+            const who = document.createElement("span");
+            who.className = "sender";
+            who.textContent = sender;
+
+            const time = document.createElement("span");
+            time.textContent = formatTime(ts);
+
+            meta.appendChild(who);
+            meta.appendChild(time);
+            bubble.appendChild(document.createElement("div")).appendChild(meta);
+            row.appendChild(bubble);
+            chatEl.appendChild(row);
+            chatEl.scrollTop = chatEl.scrollHeight;
+        }
+
+        function formatTime(ts){
+            const d = new Date(ts);
+            return d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }
+
+        // === Enviar ===
+        function send(){
+            const txt = (inputEl.value || "").trim();
+            if(!txt) return;
+            const payload = { sender: myName, content: txt, timestamp: Date.now() };
+            try{
+                ws.send(JSON.stringify(payload));
+                // Pinta optimista (por si tu backend no hace echo al mismo emisor)
+                addMessage(myName, txt, payload.timestamp);
+                inputEl.value = "";
+                inputEl.focus();
+            }catch(e){
+                alert("No se pudo enviar. ¿Conexión caída?");
+            }
+        }
+        sendBtn.addEventListener("click", send);
+        inputEl.addEventListener("keydown", (e) => {
+            if(e.key === "Enter" && !e.shiftKey){ e.preventDefault(); send(); }
+        });
+
+        // Mensajes de bienvenida locales (opcional)
+        setTimeout(() => {
+            if (chatEl.childElementCount === 0) {
+                addMessage("Sistema", "Bienvenido al chat 👋. Escribe tu mensaje abajo.", Date.now());
+            }
+        }, 400);
+    })();
+</script>
+</body>
+</html>
