@@ -57,8 +57,7 @@ public class SpeedCalculator {
 		}
 	}
 
-}
-//@Component
+}//@Component
 //public class SpeedCalculator {
 //
 //	@Autowired
