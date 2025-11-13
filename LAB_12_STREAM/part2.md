@@ -2,12 +2,12 @@
 
 ```mermaid
 graph TD
-    actor BusinessUser as "👩‍💼 Business User"
-    actor RiskManager as "👨‍💻 Risk Manager"
-    actor Admin as "🛠️ System Administrator"
-    actor MonitoringService as "📡 Central Monitoring Service"
+    actor BusinessUser as "Business User"
+    actor RiskManager as "Risk Manager"
+    actor Admin as "System Administrator"
+    actor MonitoringService as "Central Monitoring Service"
 
-    subgraph RiskSystem["🧮 Financial Risk System"]
+    subgraph RiskSystem["Financial Risk System"]
         UC1["Import Trade Data"]
         UC2["Import Counterparty Data"]
         UC3["Join & Enrich Data"]
@@ -35,7 +35,7 @@ graph TD
 
 ## 🔄 b. Activity Diagram – Creating a Risk Report
 
-```
+```mermaid
 flowchart TD
     A["Start of Process (5pm NY)"] --> B["Import Trade Data (TDS XML)"]
     B --> C["Import Counterparty Data (RDS XML)"]
@@ -74,7 +74,7 @@ graph TD
 
 ## 🧱 d. Container Diagram
 
-```
+```mermaid
 graph TD
     subgraph RiskSystem["🧮 Financial Risk System"]
         API["REST API / Web UI"]
